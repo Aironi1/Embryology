@@ -62,3 +62,8 @@ match embrion:
     case Embrion.embrion_5AA:
         print("Это 5AA")
 
+dfgsdfds
+dfsfs
+
+
+sdfsdf
