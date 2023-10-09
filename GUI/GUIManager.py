@@ -28,7 +28,7 @@ class GUIManager:
         # Присваиваем нашему полю patients результат вызова функции fetch_patients() у patients_manager
         self.patients = patients_manager.fetch_patients()
         # Создаём ряды таблицы из пациентов
-        self.__createTableRowsFromPatients(self.patients)
+        self.patientsRows = self.__createTableRowsFromPatients(self.patients)
         # Выполняем первоначальную настройку графического интерфейса
         self.__perform_gui_setup()
 
@@ -49,7 +49,7 @@ class GUIManager:
         # Возвращаем название колонок в таком формате. Если тебе нужно добавить ещё колонку,
         # то будь осторожен. В методе __createTableRowsFromPatients идёт наполнение рядов колонок
         # сейчас там передаётся 4 значения. Если появится ещё одна колонка, то придётся передавать 5 значений
-        return ['id', 'Age', 'Name', 'Embrions']
+        return ['ID', 'Возраст', 'Имя', 'Эмбрионы']
 
     # Managing Table Data
 
@@ -69,7 +69,7 @@ class GUIManager:
                 ]
             )
         # В конце свойству экземпляра класса patientsRows присваиваем patients_rows
-        self.patientsRows = patients_rows
+        return patients_rows
 
     # Создание таблицы из данных пациентов
     def __create_table_from_patients(self) -> psg.Table:
@@ -83,27 +83,23 @@ class GUIManager:
         return psg.Table(
             values=self.patientsRows, # Значения для рядов
             headings=self.__get_top_row(), # Значения для названий рядов
-            auto_size_columns=True, # Подгонять ли размер рядов автоматически
             display_row_numbers=False, # Показывать ли порядковые номера рядов
-            justification='center', # Выравнивание текста внутри рядов
+            justification='left', # Выравнивание текста внутри рядов
             key='-TABLE-', # Ключ элемента
             selected_row_colors='red on yellow', # Цвет выделенного ряда
             enable_events=True, # Включить ли обработку ивентов(events)
             expand_x=True, # Можно ли расширять ряды по x оси
             expand_y=True, # Можно ли расширять ряды по y оси (у меня не получилось)
-            enable_click_events=True # Включить ли обработку нажатий
+            enable_click_events=True, # Включить ли обработку нажатий,
+            num_rows=50
         )
 
     # Здесь создаём секцию графического интерфейса для возрастного фильтра
     def __create_age_column(self) -> [psg.Button | psg.Text | psg.Input]:
-        return [
-            psg.Text("Age filter"),
-            psg.In(size=(5, 1), enable_events=True, key="-AGE_LEFT-"),
-            psg.Text("Age"),
-            psg.In(size=(5, 1), enable_events=True, key="-AGE_RIGHT-"),
-            psg.Button('Применить фильтр'),
-            psg.Button('Очистить фильтр')
-        ]
+        age_filter_text = [psg.Text("Фильтр возраста")]
+        from_column = psg.Column([[psg.In(size=(5, 1), enable_events=True, key="-AGE_LEFT-")], [psg.Text("от")]])
+        to_column = psg.Column([[psg.In(size=(5, 1), enable_events=True, key="-AGE_RIGHT-")], [psg.Text("до")]])
+        return [age_filter_text,[from_column,to_column],[psg.Button('Применить фильтр')]]
 
     # Здесь создаём вёрстку для нашего графического интерфейса
     def __create_layout(self) -> list[list]:
@@ -115,7 +111,8 @@ class GUIManager:
         # Возвращаем вёрстку в таком формате
         # Говоря "В таком формате" я имею в виду, что библиотека графического интерфейса
         # ожидает от нас данные вёрстки именно в таком формате
-        return [ageColumn, [table]]
+        return [[psg.Col([[table]], expand_x=True,expand_y=True), psg.VSeparator(), psg.Col(ageColumn,justification='left',vertical_alignment='top')]]
+    # ,[psg.VSeparator()], psg.Col([[table]])
 
     # Создаём окно
     def __create_window(self):
@@ -123,8 +120,9 @@ class GUIManager:
         self.window = psg.Window(
             "Эмбриология", # Название окна, оно отображается в самом верху
             self.__create_layout(), # Вёрстку, её создание описании в функции __create_layout
-            size=(715, 200), # Размеры окна
-            resizable=True # Можно ли изменять размер окна. В данном случае True, то есть можно
+            size=(750, 500), # Размеры окна
+            resizable=True, # Можно ли изменять размер окна. В данном случае True, то есть можно
+            finalize=True
         )
 
     # Здесь мы обрабатываем события(ивенты) графического интерфейса
