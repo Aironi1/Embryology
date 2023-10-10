@@ -72,7 +72,7 @@ class GUIElementsFactory:
             [
                 sg.Col([[table]], expand_x=True, expand_y=True),
                 sg.VSeparator(),
-                sg.Col(age_filter_column, justification='center', vertical_alignment='top')
+                sg.Col(age_filter_column, element_justification='center', vertical_alignment='top')
             ]
         ]
 
