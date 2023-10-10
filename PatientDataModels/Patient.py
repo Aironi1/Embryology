@@ -2,7 +2,6 @@
 from PatientDataModels.Embrion import Embrion
 from pymongo import ReturnDocument
 
-# Класс Patient, тут ничего нового, только что я в инициализаторе указал типы явно
 class Patient:
     def __init__(self, id: int, age: int, name: str, embrions: [Embrion]):
         self.id = id

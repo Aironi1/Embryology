@@ -19,10 +19,8 @@ class PatientsManager:
     #     for patient in patients:
     #         self.database_manager.add_patient(patient)
 
-    # Функция добавления пациентов, но сейчас не используется
     def add_patient(self, patient: Patient):
         self.database_manager.add_patient(patient)
 
-    # Функция запроса пациентов(теперь без фильтра, объяснение в GUIManager.py на 165 строчке)
     def fetch_patients(self) -> [Patient]:
         return self.database_manager.get_patients()
